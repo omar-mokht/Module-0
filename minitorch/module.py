@@ -32,12 +32,24 @@ class Module:
     def train(self) -> None:
         "Set the mode of this module and all descendent modules to `train`."
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        m = self.modules()
+        self.training = True
+        for i in m:
+            i.train()
+            # i.training = True
+            # return
+        # raise NotImplementedError("Need to implement for Task 0.4")
 
     def eval(self) -> None:
         "Set the mode of this module and all descendent modules to `eval`."
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        m = self.modules()
+        self.training = False
+        for i in m:
+            i.eval()
+            # i.training = False
+            # return
+        # raise NotImplementedError("Need to implement for Task 0.4")
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
@@ -48,7 +60,65 @@ class Module:
             The name and `Parameter` of each ancestor parameter.
         """
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+
+        def fn(m: Module, ls: Iterable[float]) -> Iterable[float]:
+            p: Dict[str, Parameter] = m.__dict__["_parameters"]
+            ls.append(list(zip(p.keys(),p.values())))
+            if m.modules():
+                ms = m.modules()
+                for i in ms:
+                    ls = fn(i,ls)
+            return ls
+        newLs = []
+        p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        newLs.append(list(zip(p.keys(),p.values())))
+        if self.modules():
+            ms = self.modules()
+            for i in ms:
+                newLs = fn(i,newLs)
+        return newLs            
+
+        # if self.modules():
+        #     ms = self.modules()
+        #     for i in ms:
+        #         return fn(i, newLs)
+
+
+
+
+
+
+
+
+        # if not newLs:
+        #     newLs = []
+        # m = self.modules()
+        # p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        # newLs.append(list(zip(p.keys(),p.values())))
+        # for i in m:
+        #     i.named_parameters()
+        #     p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        #     newLs.append(list(zip(p.keys(),p.values())))
+        # m = self.modules()
+        # p: Dict[str, Parameter] = self.__dict__["_parameters"]
+        # newLs = list(zip(p.keys(),p.values()))
+        # for i in m:
+        #     t: Dict[str, Parameter] = i.__dict__["_parameters"]
+        #     newLs.append(list(zip(p.keys(),p.values())))
+        #     # newLs.append(p.values())
+        # return newLs
+
+        # for i in p:
+        #     newLs.append[(i,i.values())]
+        # return list((p.keys(),p.values()))
+        # return list(p.values())
+        # newLs = [(p.keys(),p.values())]
+        # for i in m:
+        #     p: Dict[str, Module] = i.__dict__["_parameters"]
+        #     newLs.append((p.keys(),p.values()))
+
+
+        # raise NotImplementedError("Need to implement for Task 0.4")
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
